@@ -38,7 +38,7 @@ export class BookingsService {
         });
       }
 
-      // Enviar emails sin bloquear
+      // Enviar emails sin bloquear //7HYD6R3D3L1C5JG5PHYSFMYZ
       this.emailService.sendConfirmation(data.email, data.name, new Date(data.date), plan).catch(err => {
         console.error('⚠️ Error enviando email (no bloqueante):', err.message);
       });

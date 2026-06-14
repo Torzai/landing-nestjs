@@ -1,26 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import * as sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter;
-
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASSWORD,
-      },
-    });
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
   }
 
   async sendConfirmation(email: string, name: string, date: Date, plan?: string) {
     try {
       const planInfo = plan ? `<p>Plan seleccionado: <strong>${plan}</strong></p>` : '';
-      await this.transporter.sendMail({
-        from: process.env.GMAIL_USER,
+      await sgMail.send({
         to: email,
+        from: process.env.GMAIL_USER!,
         subject: '✅ Reserva confirmada',
         html: `<h2>¡Hola ${name}!</h2><p>Tu reserva está confirmada para ${new Date(date).toLocaleString('es-ES')}</p>${planInfo}`,
       });
@@ -32,9 +24,9 @@ export class EmailService {
 
   async sendBookingNotification(name: string, email: string, date: Date, duration: number, plan?: string) {
     try {
-      await this.transporter.sendMail({
-        from: process.env.GMAIL_USER,
-        to: process.env.GMAIL_USER,
+      await sgMail.send({
+        to: process.env.GMAIL_USER!,
+        from: process.env.GMAIL_USER!,
         subject: '📅 Nueva reserva recibida',
         html: `
           <h2>Nueva reserva</h2>
